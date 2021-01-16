@@ -5,41 +5,76 @@ import React, { Component } from "react";
 class App extends Component {
   state = {
     countries: [],
-    searchTerm: ''
-  }
+    searchCountry: "",
+    searchCapital: "",
+  };
 
   fetchCountries = () => {
-    axios.get('https://cdn.jsdelivr.net/gh/mledoze/countries@master/countries.json').then((response) => {
-      this.setState({ countries: response.data })
-      console.log(response.data)
-    })
-  }
-  
-  componentDidMount(){
+    axios
+      .get(
+        "https://cdn.jsdelivr.net/gh/mledoze/countries@master/countries.json"
+      )
+      .then((response) => {
+        this.setState({ countries: response.data });
+      });
+  };
+
+  componentDidMount() {
     this.fetchCountries();
   }
 
-  searchHandler = (event) => {
-    this.setState({ searchTerm: event.target.value })
-  }
+  searchByCountryHandler = (event) => {
+    this.setState({ searchCountry: event.target.value });
+  };
+
+  searchByCapitalHandler = (event) => {
+    this.setState({ searchCapital: event.target.value });
+  };
+
+
 
   render() {
-    const {countries, searchTerm} = this.state;
+    const { countries, searchCountry, searchCapital } = this.state;
 
-    const filteredCountries = countries.filter((country) => {
-      return country.name.common.toLowerCase().includes(searchTerm.toLowerCase());
+    const countriesArray = countries.filter((country) => {
+      return country.name.common.toLowerCase().includes(searchCountry.toLowerCase());
     });
+
+    const capitalArray = countries.filter((country) => {
+      return country.capital[0].toLowerCase().includes(searchCapital.toLowerCase());
+    });
+
+    const filteredCountries = [...countriesArray, ...capitalArray];
 
     return (
       <div className="App">
         <h1>Working</h1>
-        <input type="search" placeholder="search" value={searchTerm} onChange={this.searchHandler} />
-        
+
+        <input
+          type="search"
+          placeholder="Country"
+          value={searchCountry}
+          onChange={this.searchByCountryHandler}
+        />
+
+        <input
+          type="search"
+          placeholder="Capital"
+          value={searchCapital}
+          onChange={this.searchByCapitalHandler}
+        />
+
         <ul>
-        {filteredCountries.map((country) => {
-          return <li key={country.name.common}>{country.name.official}</li>
-        })}
+          {filteredCountries.map((country) => {
+            return (
+              <li key={country.name.common}>
+                Country: {country.name.official} &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                Capital: {country.capital[0]}
+              </li>
+            );
+          })}
         </ul>
+
       </div>
     );
   }
